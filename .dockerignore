@@ -1,0 +1,13 @@
+.git
+.gitignore
+*.md
+logs/
+data/
+cfgs/
+*.pth
+*.pt
+*.tar
+*.zip
+__pycache__/
+*.pyc
+.vscode/

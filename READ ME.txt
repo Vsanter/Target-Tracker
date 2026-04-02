@@ -1,0 +1,95 @@
+================================================================================
+                    TrackFormer/DeepSORT 目标追踪项目说明
+================================================================================
+
+一、项目概述
+--------------------------------------------------------------------------------
+本项目实现了基于 DeepSORT 的多目标追踪系统，支持：
+1. MOT17 数据集（图片序列）追踪测试
+2. 自定义视频文件追踪测试
+3. CPU 环境运行（无需 GPU）
+
+二、环境配置
+--------------------------------------------------------------------------------
+- 基础镜像：pytorch/pytorch:1.5-cuda10.1-cudnn7-runtime
+- PyTorch 版本：1.5.0
+- OpenCV 版本：4.13.0
+- 检测器：YOLOv3 (COCO 数据集，只检测行人)
+- 追踪器：DeepSORT (mars-small128.pb 表观模型)
+
+三、模型文件位置（容器内）
+--------------------------------------------------------------------------------
+- YOLOv3 权重：/app/deep_sort_model/yolov3.weights (237MB)
+- DeepSORT 模型：/app/deep_sort_model/mars-small128.pb (11MB)
+
+四、容器管理命令
+--------------------------------------------------------------------------------
+启动容器：    docker start trackformer
+查看状态：    docker ps
+停止容器：    docker stop trackformer
+删除容器：    docker rm trackformer (不要运行！)
+
+五、测试 MOT17 数据集
+--------------------------------------------------------------------------------
+可用序列：MOT17-02-FRCNN, MOT17-04-FRCNN, MOT17-05-FRCNN,
+          MOT17-09-FRCNN, MOT17-10-FRCNN, MOT17-11-FRCNN, MOT17-13-FRCNN
+          (每个序列还有 -DPM 和 -SDP 版本可选)
+
+运行命令示例：
+  docker exec -it trackformer python /app/run_mot17.py MOT17-02-FRCNN
+  docker exec -it trackformer python /app/run_mot17.py MOT17-04-FRCNN
+
+复制结果：
+  docker cp trackformer:/app/results/ "F:\repos\trackformer\results\"
+
+输出位置：F:\repos\trackformer\results\MOT17-XX-FRCNN_output.mp4
+
+六、测试自定义视频
+--------------------------------------------------------------------------------
+步骤 1 - 复制视频到容器：
+  docker cp "F:\repos\trackformer\videos\你的视频.mp4" trackformer:/app/
+
+步骤 2 - 运行追踪：
+  docker exec -it trackformer python /app/run_deepsort_video.py /app/视频名.mp4
+
+步骤 3 - 复制输出：
+  docker cp trackformer:/app/output_tracking.mp4 "F:\repos\trackformer\"
+
+输出位置：F:\repos\trackformer\output_tracking.mp4
+
+七、输出视频内容
+--------------------------------------------------------------------------------
+- 原始视频画面
+- 绿色矩形框框住每个行人
+- 每个人有 ID 编号（ID:1, ID:2, ID:3...）
+- 左上角显示当前帧数和追踪人数
+
+八、脚本说明
+--------------------------------------------------------------------------------
+1. run_mot17.py - 测试 MOT17 图片序列
+   用法：docker exec -it trackformer python /app/run_mot17.py <序列名>
+
+2. run_deepsort_video.py - 测试自定义视频
+   用法：docker exec -it trackformer python /app/run_deepsort_video.py <视频路径>
+
+九、注意事项
+--------------------------------------------------------------------------------
+1. 所有命令在 PowerShell（容器外）运行，不需要进入容器
+2. 容器停止后文件不会丢失，只要不删除容器即可
+3. 直接关闭 Docker 软件不影响容器文件
+4. MOT17 数据是图片序列，不是视频文件
+5. 输出视频是追踪结果，带边界框和 ID 标注
+
+十、文件结构
+--------------------------------------------------------------------------------
+F:\repos\trackformer\
+├── Dockerfile              # 容器镜像配置
+├── run_mot17.py            # MOT17 测试脚本
+├── run_deepsort_video.py   # 自定义视频测试脚本
+├── videos\                 # 自定义视频存放目录
+├── results\                # MOT17 输出结果目录
+└── 项目说明.txt            # 本文件
+
+================================================================================
+                           创建时间：2026-04-02
+================================================================================

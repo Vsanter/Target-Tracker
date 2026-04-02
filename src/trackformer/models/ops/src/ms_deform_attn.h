@@ -9,7 +9,7 @@
 
 at::Tensor
 ms_deform_attn_forward(
-    const at::Tensor &value, 
+    const at::Tensor &value,
     const at::Tensor &spatial_shapes,
     const at::Tensor &sampling_loc,
     const at::Tensor &attn_weight,
@@ -24,12 +24,14 @@ ms_deform_attn_forward(
         AT_ERROR("Not compiled with GPU support");
 #endif
     }
-    AT_ERROR("Not implemented on the CPU");
+    // CPU 模式：调用 CPU 实现
+    return ms_deform_attn_cpu_forward(
+        value, spatial_shapes, sampling_loc, attn_weight, im2col_step);
 }
 
 std::vector<at::Tensor>
 ms_deform_attn_backward(
-    const at::Tensor &value, 
+    const at::Tensor &value,
     const at::Tensor &spatial_shapes,
     const at::Tensor &sampling_loc,
     const at::Tensor &attn_weight,
@@ -45,6 +47,8 @@ ms_deform_attn_backward(
         AT_ERROR("Not compiled with GPU support");
 #endif
     }
-    AT_ERROR("Not implemented on the CPU");
+    // CPU 模式：调用 CPU 实现
+    return ms_deform_attn_cpu_backward(
+        value, spatial_shapes, sampling_loc, attn_weight, grad_output, im2col_step);
 }
 
